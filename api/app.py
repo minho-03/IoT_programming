@@ -134,3 +134,21 @@ def delete_tweet():
         return '삭제할 트윗이 존재하지 않습니다.',404
 
     return jsonify({"message":"삭제 완료"}),200
+
+@app.route('/user/<int:user_id>',methods=['PUT'])
+def put_user(user_id):
+    if user_id not in app.users:
+        return '존재하지 않는 유저', 400
+
+    payload = request.json
+    user = app.users[user_id]
+
+    if 'name' in payload:
+        user['name'] = payload['name']
+
+    if 'email' in payload:
+        user['email'] = payload['email']
+
+    return jsonify(user)
+
+
