@@ -68,13 +68,13 @@ def follow():
 def unfollow():
     payload = request.json
     user_id = int(payload['id'])
-    user_id_to_follow = int(payload['unfollow'])
+    user_id_to_follow = int(payload['follow'])
 
     if user_id not in app.users or user_id_to_follow not in app.users:
         return '사용자가 존재하지 않습니다.', 400
         
     user = app.users[user_id]
-    user.setdefault('unfollow', set()).discard(user_id_to_follow) #키가 존재하지 않으면 디폴트값을 저장하고, 만일 키가 이미 존재하면 해당 값을 읽어들이는 기능 
+    user.setdefault('follow', set()).discard(user_id_to_follow) #키가 존재하지 않으면 디폴트값을 저장하고, 만일 키가 이미 존재하면 해당 값을 읽어들이는 기능 
 
     return jsonify(user)
 
@@ -116,7 +116,6 @@ def users():
 @app.route('/tweet', methods=['DELETE'])
 def delete_tweet():
     payload = request.json
-    user_id = int(payload['id'])
     tweet_text = payload['tweet']
 
     if user_id not in app.users:
@@ -132,6 +131,6 @@ def delete_tweet():
     after = len(app.tweets)
 
     if before == after:
-        return '삭제할 트윗이 존재하지 않습니다.',400
+        return '삭제할 트윗이 존재하지 않습니다.',404
 
     return jsonify({"message":"삭제 완료"}),200
