@@ -112,3 +112,26 @@ def users():
         users_list.append(user_without_password)
     
     return jsonify(users_list)
+
+@app.route('/tweet', methods=['DELETE'])
+def delete_tweet():
+    payload = request.json
+    user_id = int(payload['id'])
+    tweet_text = payload['tweet']
+
+    if user_id not in app.users:
+        return '사용자가 존재하지 않습니다.',400
+    
+    before = len(app.tweets)
+
+    app.tweets = [
+        t for t in app.tweets
+        if not (t['user_id'] == user_id and t['tweet'] == tweet_text)
+    ]
+
+    after = len(app.tweets)
+
+    if before == after:
+        return '삭제할 트윗이 존재하지 않습니다.',400
+
+    return jsonify({"message":"삭제 완료"}),200
