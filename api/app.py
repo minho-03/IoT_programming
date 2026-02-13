@@ -68,13 +68,26 @@ def follow():
 def unfollow():
     payload = request.json
     user_id = int(payload['id'])
-    user_id_to_follow = int(payload['follow'])
+    user_id_to_follow = int(payload['unfollow'])
 
     if user_id not in app.users or user_id_to_follow not in app.users:
         return '사용자가 존재하지 않습니다.', 400
         
     user = app.users[user_id]
-    user.setdefault('follow', set()).discard(user_id_to_follow) #키가 존재하지 않으면 디폴트값을 저장하고, 만일 키가 이미 존재하면 해당 값을 읽어들이는 기능 
+    user.setdefault('unfollow', set()).discard(user_id_to_follow) #키가 존재하지 않으면 디폴트값을 저장하고, 만일 키가 이미 존재하면 해당 값을 읽어들이는 기능 
 
     return jsonify(user)
 
+@app.route('/timeline/<int:user_id>', methods=['GET'])
+def timeline(user_id):
+    if user_id not in app.users:
+        return '사용자가 존재하지 않습니다.', 400
+    
+    follow_list = app.users[user_id].get('follow', set())
+    follow_list.add(user_id)
+    timeline = [tweet for tweet in app.tweets if tweet['user_id'] in follow_list]
+
+    return jsonify({
+        'user_id' : user_id,
+        'timeline' : timeline
+    })
