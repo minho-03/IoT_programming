@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 def ping():
 
-    print("ESP32에서 접속!")
+    print("ESP8266에서 접속!")
 
     return "pong"
 
